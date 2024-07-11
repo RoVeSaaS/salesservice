@@ -8,12 +8,13 @@ import (
 )
 
 type Config struct {
-	Host     string
-	Port     string
-	User     string
-	Password string
-	DBName   string
-	SSLMode  string
+	Host           string
+	Port           string
+	User           string
+	Password       string
+	DBName         string
+	SSLMode        string
+	WorkOSClientId string
 }
 
 var DB *gorm.DB
