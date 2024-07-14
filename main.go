@@ -30,7 +30,7 @@ import (
 // @BasePath /
 // @schemes http
 func main() {
-	// @schemes http
+	// @schemes http https
 	// Create a new gin instance
 	r := gin.Default()
 
