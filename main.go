@@ -28,9 +28,9 @@ import (
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @host localhost:8080
 // @BasePath /
-// @schemes http
+// @schemes http https
 func main() {
-	// @schemes http
+	// @schemes http https
 	// Create a new gin instance
 	r := gin.Default()
 

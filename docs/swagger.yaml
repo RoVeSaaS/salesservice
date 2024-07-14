@@ -122,6 +122,7 @@ paths:
       - Customer
 schemes:
 - http
+- https
 securityDefinitions:
   Bearer:
     in: header
