@@ -3,11 +3,16 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"salesservice/models"
 
 	"github.com/gin-gonic/gin"
 )
+
+type TenantCheck struct {
+	TenantID string `json:"tenant_id" binding:"required"`
+}
 
 // CreateCustomer godoc
 // @Summary Create a Customer
@@ -26,7 +31,12 @@ func CreateCustomer(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
+	ClaimTenantId, _ := c.Get("tenant_id")
+	fmt.Println(ClaimTenantId)
+	if ClaimTenantId != customer.TenantID {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Passed Org ID is not matching with Token org ID"})
+		return
+	}
 	var existingcustomer models.Customers
 
 	models.DB.Where("customer_id = ?", customer.CustomerId).Where("tenant_id = ?", customer.TenantID).First(&existingcustomer)
@@ -45,12 +55,26 @@ func CreateCustomer(c *gin.Context) {
 // @Tags Customer
 // @Accept json
 // @Produce json
+// @Param TenantCheck body TenantCheck true "TenantCheck"
 // @Success 200 {object} models.Customers
 // @Router /customers [get]
 // @Security Bearer
 func GetAllCustomers(c *gin.Context) {
 	var customers []models.Customers
-	models.DB.Find(&customers)
+	var TenantCheck TenantCheck
+	if err := c.ShouldBindJSON(&TenantCheck); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	ClaimTenantId, _ := c.Get("tenant_id")
+	fmt.Println(ClaimTenantId)
+	if ClaimTenantId != TenantCheck.TenantID {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Passed Org ID is not matching with Token org ID"})
+		return
+	}
+	if err := models.DB.Where("tenant_id = ?", ClaimTenantId).Find(&customers).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Not a valid org"})
+	}
 	c.JSON(http.StatusOK, gin.H{"customers": customers})
 }
 
@@ -61,12 +85,24 @@ func GetAllCustomers(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param customer_id path int true "CustomerID"
+// @Param TenantCheck body TenantCheck true "TenantCheck"
 // @Success 200 {object} models.Customers
 // @Router /customer/{customer_id} [get]
 // @Security Bearer
 func GetCustomerByID(c *gin.Context) {
 	var customer models.Customers
-	if err := models.DB.Where("id = ?", c.Param("id")).First(&customer).Error; err != nil {
+	var TenantCheck TenantCheck
+	if err := c.ShouldBindJSON(&TenantCheck); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	ClaimTenantId, _ := c.Get("tenant_id")
+	fmt.Println(ClaimTenantId)
+	if ClaimTenantId != TenantCheck.TenantID {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Passed Org ID is not matching with Token org ID"})
+		return
+	}
+	if err := models.DB.Where("id = ?", c.Param("id")).Where("tenant_id = ?", ClaimTenantId).First(&customer).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Record Not Found"})
 		return
 	}
