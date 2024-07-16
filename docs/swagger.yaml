@@ -1,11 +1,4 @@
 definitions:
-  controllers.TenantCheck:
-    properties:
-      tenant_id:
-        type: string
-    required:
-    - tenant_id
-    type: object
   gorm.DeletedAt:
     properties:
       time:
@@ -98,12 +91,6 @@ paths:
         name: customer_id
         required: true
         type: integer
-      - description: TenantCheck
-        in: body
-        name: TenantCheck
-        required: true
-        schema:
-          $ref: '#/definitions/controllers.TenantCheck'
       produces:
       - application/json
       responses:
@@ -121,13 +108,6 @@ paths:
       consumes:
       - application/json
       description: Retreive all the customers for an org.
-      parameters:
-      - description: TenantCheck
-        in: body
-        name: TenantCheck
-        required: true
-        schema:
-          $ref: '#/definitions/controllers.TenantCheck'
       produces:
       - application/json
       responses:
