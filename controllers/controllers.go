@@ -59,6 +59,11 @@ func GetAllCustomers(c *gin.Context) {
 	ClaimTenantId, _ := c.Get("tenant_id")
 	if err := models.DB.Where("tenant_id = ?", ClaimTenantId).Find(&customers).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Not a valid org"})
+		return
+	}
+	if len(customers) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "No Customers found for the orgID"})
+		return
 	}
 	c.JSON(http.StatusOK, gin.H{"customers": customers})
 }
@@ -78,7 +83,7 @@ func GetCustomerByID(c *gin.Context) {
 
 	ClaimTenantId, _ := c.Get("tenant_id")
 	if err := models.DB.Where("id = ?", c.Param("id")).Where("tenant_id = ?", ClaimTenantId).First(&customer).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Record Not Found"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Customer ID Not Found"})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"data": customer})
