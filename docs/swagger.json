@@ -79,15 +79,6 @@
                         "name": "customer_id",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "description": "TenantCheck",
-                        "name": "TenantCheck",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/controllers.TenantCheck"
-                        }
                     }
                 ],
                 "responses": {
@@ -118,17 +109,6 @@
                     "Customer"
                 ],
                 "summary": "Get Customers",
-                "parameters": [
-                    {
-                        "description": "TenantCheck",
-                        "name": "TenantCheck",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/controllers.TenantCheck"
-                        }
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -141,17 +121,6 @@
         }
     },
     "definitions": {
-        "controllers.TenantCheck": {
-            "type": "object",
-            "required": [
-                "tenant_id"
-            ],
-            "properties": {
-                "tenant_id": {
-                    "type": "string"
-                }
-            }
-        },
         "gorm.DeletedAt": {
             "type": "object",
             "properties": {

@@ -83,15 +83,6 @@ const docTemplate = `{
                         "name": "customer_id",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "description": "TenantCheck",
-                        "name": "TenantCheck",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/controllers.TenantCheck"
-                        }
                     }
                 ],
                 "responses": {
@@ -122,17 +113,6 @@ const docTemplate = `{
                     "Customer"
                 ],
                 "summary": "Get Customers",
-                "parameters": [
-                    {
-                        "description": "TenantCheck",
-                        "name": "TenantCheck",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/controllers.TenantCheck"
-                        }
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -145,17 +125,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "controllers.TenantCheck": {
-            "type": "object",
-            "required": [
-                "tenant_id"
-            ],
-            "properties": {
-                "tenant_id": {
-                    "type": "string"
-                }
-            }
-        },
         "gorm.DeletedAt": {
             "type": "object",
             "properties": {

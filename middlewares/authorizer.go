@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"net/http"
 	"salesservice/utils"
 	"strings"
@@ -37,9 +36,7 @@ func AuthenticationMiddleware() gin.HandlerFunc {
 			return
 		}
 		claims := token.Claims.(jwt.MapClaims)
-		fmt.Println(claims["org_id"])
 		c.Set("tenant_id", claims["org_id"])
-		fmt.Println(claims["role"])
 		c.Set("role", claims["role"])
 		c.Next()
 	}
