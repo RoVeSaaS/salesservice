@@ -1,11 +1,13 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 	"salesservice/utils"
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v4"
 )
 
 // AuthenticationMiddleware checks if the user has a valid JWT token
@@ -28,13 +30,17 @@ func AuthenticationMiddleware() gin.HandlerFunc {
 
 		tokenString = tokenParts[1]
 
-		_, err := utils.VerifyToken(tokenString)
+		token, err := utils.VerifyToken(tokenString)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid authentication token", "message": err})
 			c.Abort()
 			return
 		}
-		//fmt.Println(token.Claims)
+		claims := token.Claims.(jwt.MapClaims)
+		fmt.Println(claims["org_id"])
+		c.Set("tenant_id", claims["org_id"])
+		fmt.Println(claims["role"])
+		c.Set("role", claims["role"])
 		c.Next()
 	}
 }
