@@ -6,13 +6,18 @@ import (
 
 	"github.com/MicahParks/keyfunc/v3"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/workos/workos-go/v4/pkg/usermanagement"
 )
 
 func VerifyToken(tokenstring string) (*jwt.Token, error) {
-	WorkOSJWKSURL := fmt.Sprintf("https://api.workos.com/sso/jwks/%s", os.Getenv("WORKOS_CLIENT_ID"))
+	usermanagement.SetAPIKey(os.Getenv("WORKOS_API_KEY"))
+	WorkOSJWKSURL, err := usermanagement.GetJWKSURL(os.Getenv("WORKOS_CLIENT_ID"))
+	if err != nil {
+		return nil, err
+	}
 	//fmt.Println(WorkOSJWKSURL)
 
-	jwks, err := keyfunc.NewDefault([]string{WorkOSJWKSURL})
+	jwks, err := keyfunc.NewDefault([]string{WorkOSJWKSURL.String()})
 	if err != nil {
 		panic(err)
 	}
