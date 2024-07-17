@@ -2,13 +2,16 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	_ "salesservice/docs"
 	"salesservice/models"
 	"salesservice/routes"
 
 	"github.com/gin-gonic/gin"
+	"github.com/honeycombio/otel-config-go/otelconfig"
 	"github.com/joho/godotenv"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -32,6 +35,7 @@ import (
 func main() {
 	// @schemes http https
 	// Create a new gin instance
+
 	r := gin.Default()
 
 	// Load .env file and Create a new connection to the database
@@ -49,9 +53,16 @@ func main() {
 		SSLMode:        os.Getenv("DB_SSLMODE"),
 		WorkOSClientId: os.Getenv("WORKOS_CLIENT_ID"),
 	}
+	otelShutdown, err := otelconfig.ConfigureOpenTelemetry()
+	if err != nil {
+		log.Fatalf("error setting up OTel SDK - %e", err)
+	}
 
+	defer otelShutdown()
 	// Initialize DB
 	models.InitDB(config)
+
+	r.Use(otelgin.Middleware(os.Getenv("OTEL_SERVICE_NAME")))
 	// Load the routes
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	routes.CustomerRoutes(r)
