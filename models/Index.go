@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 
+	"github.com/uptrace/opentelemetry-go-extra/otelgorm"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -35,4 +36,7 @@ func InitDB(cfg Config) {
 	fmt.Println("Migrated database")
 
 	DB = db
+	if err := DB.Use(otelgorm.NewPlugin()); err != nil {
+		panic(err)
+	}
 }
