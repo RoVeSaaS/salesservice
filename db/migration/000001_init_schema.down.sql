@@ -1,0 +1,9 @@
+DROP TABLE IF EXISTS customers;
+DROP TABLE IF EXISTS customer_details;
+DROP TABLE IF EXISTS customer_contact;
+DROP TABLE IF EXISTS customer_transcations;
+DROP TABLE IF EXISTS vendor_transcations;
+DROP TABLE IF EXISTS internal_transcations;
+DROP TABLE IF EXISTS vendors;
+DROP TABLE IF EXISTS quotations;
+DROP TABLE IF EXISTS service_details;

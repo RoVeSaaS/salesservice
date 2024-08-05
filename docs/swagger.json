@@ -15,7 +15,7 @@
         "version": "1.0"
     },
     "paths": {
-        "/customer": {
+        "/api/customer/": {
             "post": {
                 "security": [
                     {
@@ -40,7 +40,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Customers"
+                            "$ref": "#/definitions/models.CreateCustomerParams"
                         }
                     }
                 ],
@@ -48,72 +48,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Customers"
-                        }
-                    }
-                }
-            }
-        },
-        "/customer/{customer_id}": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Retreive a customer by ID for an org.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Customer"
-                ],
-                "summary": "Get Customer",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "CustomerID",
-                        "name": "customer_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Customers"
-                        }
-                    }
-                }
-            }
-        },
-        "/customers": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Retreive all the customers for an org.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Customer"
-                ],
-                "summary": "Get Customers",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Customers"
+                            "$ref": "#/definitions/db.Customer"
                         }
                     }
                 }
@@ -121,73 +56,85 @@
         }
     },
     "definitions": {
-        "gorm.DeletedAt": {
+        "db.Customer": {
             "type": "object",
             "properties": {
-                "time": {
-                    "type": "string"
+                "customer_address": {
+                    "$ref": "#/definitions/sql.NullString"
                 },
-                "valid": {
-                    "description": "Valid is true if Time is not NULL",
-                    "type": "boolean"
-                }
-            }
-        },
-        "models.Customers": {
-            "type": "object",
-            "required": [
-                "customer_email",
-                "customer_id",
-                "customer_name",
-                "customer_phone",
-                "is_active",
-                "tenant_id"
-            ],
-            "properties": {
-                "address": {
-                    "type": "string"
+                "customer_city": {
+                    "$ref": "#/definitions/sql.NullString"
                 },
-                "city": {
-                    "type": "string"
-                },
-                "country": {
-                    "type": "string"
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "customer_email": {
-                    "type": "string"
+                "customer_country": {
+                    "$ref": "#/definitions/sql.NullString"
                 },
                 "customer_id": {
                     "type": "string"
                 },
                 "customer_name": {
-                    "type": "string"
+                    "$ref": "#/definitions/sql.NullString"
                 },
-                "customer_phone": {
-                    "type": "string"
+                "customer_state": {
+                    "$ref": "#/definitions/sql.NullString"
                 },
-                "deletedAt": {
-                    "$ref": "#/definitions/gorm.DeletedAt"
+                "customer_status": {
+                    "$ref": "#/definitions/sql.NullString"
                 },
-                "id": {
-                    "type": "integer"
-                },
-                "is_active": {
-                    "type": "boolean"
-                },
-                "pincode": {
-                    "type": "integer"
-                },
-                "state": {
-                    "type": "string"
+                "customer_total_value": {
+                    "$ref": "#/definitions/sql.NullInt64"
                 },
                 "tenant_id": {
                     "type": "string"
-                },
-                "updatedAt": {
+                }
+            }
+        },
+        "models.CreateCustomerParams": {
+            "type": "object",
+            "properties": {
+                "customer_address": {
                     "type": "string"
+                },
+                "customer_city": {
+                    "type": "string"
+                },
+                "customer_country": {
+                    "type": "string"
+                },
+                "customer_name": {
+                    "type": "string"
+                },
+                "customer_state": {
+                    "type": "string"
+                },
+                "customer_status": {
+                    "type": "string"
+                },
+                "customer_total_value": {
+                    "type": "integer"
+                }
+            }
+        },
+        "sql.NullInt64": {
+            "type": "object",
+            "properties": {
+                "int64": {
+                    "type": "integer"
+                },
+                "valid": {
+                    "description": "Valid is true if Int64 is not NULL",
+                    "type": "boolean"
+                }
+            }
+        },
+        "sql.NullString": {
+            "type": "object",
+            "properties": {
+                "string": {
+                    "type": "string"
+                },
+                "valid": {
+                    "description": "Valid is true if String is not NULL",
+                    "type": "boolean"
                 }
             }
         }

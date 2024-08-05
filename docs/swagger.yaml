@@ -1,51 +1,57 @@
 definitions:
-  gorm.DeletedAt:
+  db.Customer:
     properties:
-      time:
-        type: string
-      valid:
-        description: Valid is true if Time is not NULL
-        type: boolean
-    type: object
-  models.Customers:
-    properties:
-      address:
-        type: string
-      city:
-        type: string
-      country:
-        type: string
-      createdAt:
-        type: string
-      customer_email:
-        type: string
+      customer_address:
+        $ref: '#/definitions/sql.NullString'
+      customer_city:
+        $ref: '#/definitions/sql.NullString'
+      customer_country:
+        $ref: '#/definitions/sql.NullString'
       customer_id:
         type: string
       customer_name:
-        type: string
-      customer_phone:
-        type: string
-      deletedAt:
-        $ref: '#/definitions/gorm.DeletedAt'
-      id:
-        type: integer
-      is_active:
-        type: boolean
-      pincode:
-        type: integer
-      state:
-        type: string
+        $ref: '#/definitions/sql.NullString'
+      customer_state:
+        $ref: '#/definitions/sql.NullString'
+      customer_status:
+        $ref: '#/definitions/sql.NullString'
+      customer_total_value:
+        $ref: '#/definitions/sql.NullInt64'
       tenant_id:
         type: string
-      updatedAt:
+    type: object
+  models.CreateCustomerParams:
+    properties:
+      customer_address:
         type: string
-    required:
-    - customer_email
-    - customer_id
-    - customer_name
-    - customer_phone
-    - is_active
-    - tenant_id
+      customer_city:
+        type: string
+      customer_country:
+        type: string
+      customer_name:
+        type: string
+      customer_state:
+        type: string
+      customer_status:
+        type: string
+      customer_total_value:
+        type: integer
+    type: object
+  sql.NullInt64:
+    properties:
+      int64:
+        type: integer
+      valid:
+        description: Valid is true if Int64 is not NULL
+        type: boolean
+    type: object
+  sql.NullString:
+    properties:
+      string:
+        type: string
+      valid:
+        description: Valid is true if String is not NULL
+        type: boolean
     type: object
 info:
   contact:
@@ -56,7 +62,7 @@ info:
   title: SalesService APIs
   version: "1.0"
 paths:
-  /customer:
+  /api/customer/:
     post:
       consumes:
       - application/json
@@ -67,57 +73,17 @@ paths:
         name: customer
         required: true
         schema:
-          $ref: '#/definitions/models.Customers'
+          $ref: '#/definitions/models.CreateCustomerParams'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Customers'
+            $ref: '#/definitions/db.Customer'
       security:
       - Bearer: []
       summary: Create a Customer
-      tags:
-      - Customer
-  /customer/{customer_id}:
-    get:
-      consumes:
-      - application/json
-      description: Retreive a customer by ID for an org.
-      parameters:
-      - description: CustomerID
-        in: path
-        name: customer_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.Customers'
-      security:
-      - Bearer: []
-      summary: Get Customer
-      tags:
-      - Customer
-  /customers:
-    get:
-      consumes:
-      - application/json
-      description: Retreive all the customers for an org.
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.Customers'
-      security:
-      - Bearer: []
-      summary: Get Customers
       tags:
       - Customer
 schemes:
