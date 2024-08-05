@@ -50,9 +50,7 @@ var (
 
 func init() {
 	ctx = context.TODO()
-	err := godotenv.Load()
-	fmt.Println(err)
-	fmt.Println(os.Getenv("DB_DRIVER"))
+	_ = godotenv.Load()
 	connection, err := sql.Open(os.Getenv("DB_DRIVER"), os.Getenv("DB_SOURCE"))
 	if err != nil {
 		log.Fatal("Couldn't Connect to the DB", err)
