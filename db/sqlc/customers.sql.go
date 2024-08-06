@@ -7,7 +7,6 @@ package db
 
 import (
 	"context"
-	"database/sql"
 
 	"github.com/google/uuid"
 )
@@ -15,32 +14,49 @@ import (
 const createCustomer = `-- name: CreateCustomer :one
 INSERT INTO customers (
   "tenant_id",
+  "customer_id",
   "customer_name" ,
   "customer_address",
   "customer_city" ,
   "customer_state" ,
   "customer_country" ,
   "customer_total_value" ,
-  "customer_status"
+  "customer_status",
+  "customer_app_type" ,
+  "customer_reference" ,
+  "customer_app_size" ,
+  "customer_primary_email" ,
+  "customer_primary_phone" ,
+  "customer_secondary_email" ,
+  "customer_secondary_phone" 
 ) VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8
-) RETURNING customer_id, tenant_id, customer_name, customer_address, customer_city, customer_state, customer_country, customer_total_value, customer_status
+    $1, $2, $3, $4, $5, $6, $7, $8, $9 , $10, $11, $12, $13, $14, $15, $16
+) RETURNING customer_uuid, tenant_id, customer_id, customer_name, customer_address, customer_city, customer_state, customer_country, customer_total_value, customer_status, customer_app_type, customer_reference, customer_app_size, customer_primary_email, customer_primary_phone, customer_secondary_email, customer_secondary_phone
 `
 
 type CreateCustomerParams struct {
-	TenantID           string         `json:"tenant_id"`
-	CustomerName       sql.NullString `json:"customer_name"`
-	CustomerAddress    sql.NullString `json:"customer_address"`
-	CustomerCity       sql.NullString `json:"customer_city"`
-	CustomerState      sql.NullString `json:"customer_state"`
-	CustomerCountry    sql.NullString `json:"customer_country"`
-	CustomerTotalValue sql.NullInt64  `json:"customer_total_value"`
-	CustomerStatus     sql.NullString `json:"customer_status"`
+	TenantID               string `json:"tenant_id"`
+	CustomerID             string `json:"customer_id"`
+	CustomerName           string `json:"customer_name"`
+	CustomerAddress        string `json:"customer_address"`
+	CustomerCity           string `json:"customer_city"`
+	CustomerState          string `json:"customer_state"`
+	CustomerCountry        string `json:"customer_country"`
+	CustomerTotalValue     int64  `json:"customer_total_value"`
+	CustomerStatus         string `json:"customer_status"`
+	CustomerAppType        string `json:"customer_app_type"`
+	CustomerReference      string `json:"customer_reference"`
+	CustomerAppSize        string `json:"customer_app_size"`
+	CustomerPrimaryEmail   string `json:"customer_primary_email"`
+	CustomerPrimaryPhone   string `json:"customer_primary_phone"`
+	CustomerSecondaryEmail string `json:"customer_secondary_email"`
+	CustomerSecondaryPhone string `json:"customer_secondary_phone"`
 }
 
 func (q *Queries) CreateCustomer(ctx context.Context, arg CreateCustomerParams) (Customer, error) {
 	row := q.queryRow(ctx, q.createCustomerStmt, createCustomer,
 		arg.TenantID,
+		arg.CustomerID,
 		arg.CustomerName,
 		arg.CustomerAddress,
 		arg.CustomerCity,
@@ -48,11 +64,19 @@ func (q *Queries) CreateCustomer(ctx context.Context, arg CreateCustomerParams) 
 		arg.CustomerCountry,
 		arg.CustomerTotalValue,
 		arg.CustomerStatus,
+		arg.CustomerAppType,
+		arg.CustomerReference,
+		arg.CustomerAppSize,
+		arg.CustomerPrimaryEmail,
+		arg.CustomerPrimaryPhone,
+		arg.CustomerSecondaryEmail,
+		arg.CustomerSecondaryPhone,
 	)
 	var i Customer
 	err := row.Scan(
-		&i.CustomerID,
+		&i.CustomerUuid,
 		&i.TenantID,
+		&i.CustomerID,
 		&i.CustomerName,
 		&i.CustomerAddress,
 		&i.CustomerCity,
@@ -60,180 +84,50 @@ func (q *Queries) CreateCustomer(ctx context.Context, arg CreateCustomerParams) 
 		&i.CustomerCountry,
 		&i.CustomerTotalValue,
 		&i.CustomerStatus,
-	)
-	return i, err
-}
-
-const createCustomerContat = `-- name: CreateCustomerContat :one
-INSERT INTO "customer_contact" (
-  "customer_id",
-  "tenant_id" ,
-  "customer_email_1",
-  "customer_phone_number_1" ,
-  "customer_email_2" ,
-  "customer_phone_number_2"
-) VALUES (
-    $1, $2, $3, $4, $5, $6
-) RETURNING customer_id, tenant_id, customer_email_1, customer_phone_number_1, customer_email_2, customer_phone_number_2
-`
-
-type CreateCustomerContatParams struct {
-	CustomerID           uuid.NullUUID  `json:"customer_id"`
-	TenantID             string         `json:"tenant_id"`
-	CustomerEmail1       sql.NullString `json:"customer_email_1"`
-	CustomerPhoneNumber1 sql.NullString `json:"customer_phone_number_1"`
-	CustomerEmail2       sql.NullString `json:"customer_email_2"`
-	CustomerPhoneNumber2 sql.NullString `json:"customer_phone_number_2"`
-}
-
-func (q *Queries) CreateCustomerContat(ctx context.Context, arg CreateCustomerContatParams) (CustomerContact, error) {
-	row := q.queryRow(ctx, q.createCustomerContatStmt, createCustomerContat,
-		arg.CustomerID,
-		arg.TenantID,
-		arg.CustomerEmail1,
-		arg.CustomerPhoneNumber1,
-		arg.CustomerEmail2,
-		arg.CustomerPhoneNumber2,
-	)
-	var i CustomerContact
-	err := row.Scan(
-		&i.CustomerID,
-		&i.TenantID,
-		&i.CustomerEmail1,
-		&i.CustomerPhoneNumber1,
-		&i.CustomerEmail2,
-		&i.CustomerPhoneNumber2,
-	)
-	return i, err
-}
-
-const createCustomerDetails = `-- name: CreateCustomerDetails :one
-INSERT INTO "customer_details" (
-  "customer_id",
-  "tenant_id",
-  "customer_app_type" ,
-  "customer_reference" ,
-  "customer_app_size"
-) VALUES (
-    $1, $2, $3, $4, $5
-) RETURNING customer_id, tenant_id, customer_app_type, customer_reference, customer_app_size
-`
-
-type CreateCustomerDetailsParams struct {
-	CustomerID        uuid.NullUUID  `json:"customer_id"`
-	TenantID          string         `json:"tenant_id"`
-	CustomerAppType   sql.NullString `json:"customer_app_type"`
-	CustomerReference sql.NullString `json:"customer_reference"`
-	CustomerAppSize   sql.NullString `json:"customer_app_size"`
-}
-
-func (q *Queries) CreateCustomerDetails(ctx context.Context, arg CreateCustomerDetailsParams) (CustomerDetail, error) {
-	row := q.queryRow(ctx, q.createCustomerDetailsStmt, createCustomerDetails,
-		arg.CustomerID,
-		arg.TenantID,
-		arg.CustomerAppType,
-		arg.CustomerReference,
-		arg.CustomerAppSize,
-	)
-	var i CustomerDetail
-	err := row.Scan(
-		&i.CustomerID,
-		&i.TenantID,
 		&i.CustomerAppType,
 		&i.CustomerReference,
 		&i.CustomerAppSize,
+		&i.CustomerPrimaryEmail,
+		&i.CustomerPrimaryPhone,
+		&i.CustomerSecondaryEmail,
+		&i.CustomerSecondaryPhone,
 	)
 	return i, err
 }
 
 const deleteCustomerByID = `-- name: DeleteCustomerByID :exec
 delete from customers
-where tenant_id = $1 and customer_id = $2
+where tenant_id = $1 and customer_uuid = $2
 `
 
 type DeleteCustomerByIDParams struct {
-	TenantID   string    `json:"tenant_id"`
-	CustomerID uuid.UUID `json:"customer_id"`
+	TenantID     string    `json:"tenant_id"`
+	CustomerUuid uuid.UUID `json:"customer_uuid"`
 }
 
 func (q *Queries) DeleteCustomerByID(ctx context.Context, arg DeleteCustomerByIDParams) error {
-	_, err := q.exec(ctx, q.deleteCustomerByIDStmt, deleteCustomerByID, arg.TenantID, arg.CustomerID)
-	return err
-}
-
-const deleteCustomerContactByID = `-- name: DeleteCustomerContactByID :exec
-delete from customer_contact
-where tenant_id = $1 and customer_id = $2
-`
-
-type DeleteCustomerContactByIDParams struct {
-	TenantID   string        `json:"tenant_id"`
-	CustomerID uuid.NullUUID `json:"customer_id"`
-}
-
-func (q *Queries) DeleteCustomerContactByID(ctx context.Context, arg DeleteCustomerContactByIDParams) error {
-	_, err := q.exec(ctx, q.deleteCustomerContactByIDStmt, deleteCustomerContactByID, arg.TenantID, arg.CustomerID)
-	return err
-}
-
-const deleteCustomerDetailsByID = `-- name: DeleteCustomerDetailsByID :exec
-delete from customer_details
-where tenant_id = $1 and customer_id = $2
-`
-
-type DeleteCustomerDetailsByIDParams struct {
-	TenantID   string        `json:"tenant_id"`
-	CustomerID uuid.NullUUID `json:"customer_id"`
-}
-
-func (q *Queries) DeleteCustomerDetailsByID(ctx context.Context, arg DeleteCustomerDetailsByIDParams) error {
-	_, err := q.exec(ctx, q.deleteCustomerDetailsByIDStmt, deleteCustomerDetailsByID, arg.TenantID, arg.CustomerID)
+	_, err := q.exec(ctx, q.deleteCustomerByIDStmt, deleteCustomerByID, arg.TenantID, arg.CustomerUuid)
 	return err
 }
 
 const listCustomerByID = `-- name: ListCustomerByID :one
-select c.customer_id, c.tenant_id,c.customer_name,c.customer_address,c.customer_city,c.customer_state,c.customer_country,c.customer_total_value,c.customer_status,
-       d.customer_app_type,d.customer_reference,d.customer_app_size,
-       cc.customer_email_1 AS primary_email,cc.customer_phone_number_1 AS primary_phone,
-       cc.customer_email_2 AS secondary_email,cc.customer_phone_number_2 AS secondary_phone
-from customers c 
-left join customer_details d 
-on c.customer_id = d.customer_id and c.tenant_id = d.tenant_id
-left join customer_contact cc 
-on c.customer_id = cc.customer_id and c.tenant_id = cc.tenant_id
-where c.tenant_id = $1 AND c.customer_id = $2
+select customer_uuid, tenant_id, customer_id, customer_name, customer_address, customer_city, customer_state, customer_country, customer_total_value, customer_status, customer_app_type, customer_reference, customer_app_size, customer_primary_email, customer_primary_phone, customer_secondary_email, customer_secondary_phone
+from customers
+where tenant_id = $1 AND customer_uuid = $2
 `
 
 type ListCustomerByIDParams struct {
-	TenantID   string    `json:"tenant_id"`
-	CustomerID uuid.UUID `json:"customer_id"`
+	TenantID     string    `json:"tenant_id"`
+	CustomerUuid uuid.UUID `json:"customer_uuid"`
 }
 
-type ListCustomerByIDRow struct {
-	CustomerID         uuid.UUID      `json:"customer_id"`
-	TenantID           string         `json:"tenant_id"`
-	CustomerName       sql.NullString `json:"customer_name"`
-	CustomerAddress    sql.NullString `json:"customer_address"`
-	CustomerCity       sql.NullString `json:"customer_city"`
-	CustomerState      sql.NullString `json:"customer_state"`
-	CustomerCountry    sql.NullString `json:"customer_country"`
-	CustomerTotalValue sql.NullInt64  `json:"customer_total_value"`
-	CustomerStatus     sql.NullString `json:"customer_status"`
-	CustomerAppType    sql.NullString `json:"customer_app_type"`
-	CustomerReference  sql.NullString `json:"customer_reference"`
-	CustomerAppSize    sql.NullString `json:"customer_app_size"`
-	PrimaryEmail       sql.NullString `json:"primary_email"`
-	PrimaryPhone       sql.NullString `json:"primary_phone"`
-	SecondaryEmail     sql.NullString `json:"secondary_email"`
-	SecondaryPhone     sql.NullString `json:"secondary_phone"`
-}
-
-func (q *Queries) ListCustomerByID(ctx context.Context, arg ListCustomerByIDParams) (ListCustomerByIDRow, error) {
-	row := q.queryRow(ctx, q.listCustomerByIDStmt, listCustomerByID, arg.TenantID, arg.CustomerID)
-	var i ListCustomerByIDRow
+func (q *Queries) ListCustomerByID(ctx context.Context, arg ListCustomerByIDParams) (Customer, error) {
+	row := q.queryRow(ctx, q.listCustomerByIDStmt, listCustomerByID, arg.TenantID, arg.CustomerUuid)
+	var i Customer
 	err := row.Scan(
-		&i.CustomerID,
+		&i.CustomerUuid,
 		&i.TenantID,
+		&i.CustomerID,
 		&i.CustomerName,
 		&i.CustomerAddress,
 		&i.CustomerCity,
@@ -244,58 +138,40 @@ func (q *Queries) ListCustomerByID(ctx context.Context, arg ListCustomerByIDPara
 		&i.CustomerAppType,
 		&i.CustomerReference,
 		&i.CustomerAppSize,
-		&i.PrimaryEmail,
-		&i.PrimaryPhone,
-		&i.SecondaryEmail,
-		&i.SecondaryPhone,
+		&i.CustomerPrimaryEmail,
+		&i.CustomerPrimaryPhone,
+		&i.CustomerSecondaryEmail,
+		&i.CustomerSecondaryPhone,
 	)
 	return i, err
 }
 
 const listCustomers = `-- name: ListCustomers :many
-select c.customer_id, c.tenant_id,c.customer_name,c.customer_address,c.customer_city,c.customer_state,c.customer_country,c.customer_total_value,c.customer_status,
-d.customer_app_type,d.customer_reference,d.customer_app_size,
-cc.customer_email_1 AS primary_email,cc.customer_phone_number_1 AS primary_phone,
-cc.customer_email_2 AS secondary_email,cc.customer_phone_number_2 AS secondary_phone
-from customers c
-left join customer_details d 
-on c.customer_id = d.customer_id and c.tenant_id = d.tenant_id
-left join customer_contact cc 
-on c.customer_id = cc.customer_id and c.tenant_id = cc.tenant_id
-where c.tenant_id = $1
+select customer_uuid, tenant_id, customer_id, customer_name, customer_address, customer_city, customer_state, customer_country, customer_total_value, customer_status, customer_app_type, customer_reference, customer_app_size, customer_primary_email, customer_primary_phone, customer_secondary_email, customer_secondary_phone from customers
+where tenant_id = $1
+LIMIT $2
+OFFSET $3
 `
 
-type ListCustomersRow struct {
-	CustomerID         uuid.UUID      `json:"customer_id"`
-	TenantID           string         `json:"tenant_id"`
-	CustomerName       sql.NullString `json:"customer_name"`
-	CustomerAddress    sql.NullString `json:"customer_address"`
-	CustomerCity       sql.NullString `json:"customer_city"`
-	CustomerState      sql.NullString `json:"customer_state"`
-	CustomerCountry    sql.NullString `json:"customer_country"`
-	CustomerTotalValue sql.NullInt64  `json:"customer_total_value"`
-	CustomerStatus     sql.NullString `json:"customer_status"`
-	CustomerAppType    sql.NullString `json:"customer_app_type"`
-	CustomerReference  sql.NullString `json:"customer_reference"`
-	CustomerAppSize    sql.NullString `json:"customer_app_size"`
-	PrimaryEmail       sql.NullString `json:"primary_email"`
-	PrimaryPhone       sql.NullString `json:"primary_phone"`
-	SecondaryEmail     sql.NullString `json:"secondary_email"`
-	SecondaryPhone     sql.NullString `json:"secondary_phone"`
+type ListCustomersParams struct {
+	TenantID string `json:"tenant_id"`
+	Limit    int32  `json:"limit"`
+	Offset   int32  `json:"offset"`
 }
 
-func (q *Queries) ListCustomers(ctx context.Context, tenantID string) ([]ListCustomersRow, error) {
-	rows, err := q.query(ctx, q.listCustomersStmt, listCustomers, tenantID)
+func (q *Queries) ListCustomers(ctx context.Context, arg ListCustomersParams) ([]Customer, error) {
+	rows, err := q.query(ctx, q.listCustomersStmt, listCustomers, arg.TenantID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []ListCustomersRow{}
+	items := []Customer{}
 	for rows.Next() {
-		var i ListCustomersRow
+		var i Customer
 		if err := rows.Scan(
-			&i.CustomerID,
+			&i.CustomerUuid,
 			&i.TenantID,
+			&i.CustomerID,
 			&i.CustomerName,
 			&i.CustomerAddress,
 			&i.CustomerCity,
@@ -306,10 +182,10 @@ func (q *Queries) ListCustomers(ctx context.Context, tenantID string) ([]ListCus
 			&i.CustomerAppType,
 			&i.CustomerReference,
 			&i.CustomerAppSize,
-			&i.PrimaryEmail,
-			&i.PrimaryPhone,
-			&i.SecondaryEmail,
-			&i.SecondaryPhone,
+			&i.CustomerPrimaryEmail,
+			&i.CustomerPrimaryPhone,
+			&i.CustomerSecondaryEmail,
+			&i.CustomerSecondaryPhone,
 		); err != nil {
 			return nil, err
 		}

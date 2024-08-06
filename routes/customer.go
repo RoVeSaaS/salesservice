@@ -23,4 +23,7 @@ func (cr *CustomerRoutes) CustomerRoute(rg *gin.RouterGroup) {
 	rg.Use(middleware.AuthenticationMiddleware())
 	router := rg.Group("customer")
 	router.POST("/", cr.customerController.CreateCustomer)
+	router.GET("/", cr.customerController.GetCustomers)
+	router.GET("/:customerid", cr.customerController.GetCustomerById)
+	router.DELETE("/:customerid", cr.customerController.DeleteCustomerById)
 }

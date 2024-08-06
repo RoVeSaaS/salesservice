@@ -9,10 +9,9 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "termsOfService": "http://swagger.io/terms/// @contact.name API Support",
         "contact": {
-            "url": "http://www.swagger.io/support",
-            "email": "support@swagger.io"
+            "name": "RoVe SaaS Support",
+            "email": "rovesaas@gmail.com"
         },
         "version": "{{.Version}}"
     },
@@ -20,6 +19,48 @@ const docTemplate = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/api/customer/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get All Customers for Tenant.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Customer"
+                ],
+                "summary": "Get All Customers for Tenant",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/db.Customer"
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
@@ -57,6 +98,75 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/api/customer/{customerid}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get a Customer by ID for Tenant.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Customer"
+                ],
+                "summary": "Get a Customer by ID for Tenant",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Customer ID",
+                        "name": "customerid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/db.Customer"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Delete a Customer by ID for Tenant.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Customer"
+                ],
+                "summary": "Delete a Customer by ID for Tenant",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Customer ID",
+                        "name": "customerid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -64,28 +174,52 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "customer_address": {
-                    "$ref": "#/definitions/sql.NullString"
+                    "type": "string"
+                },
+                "customer_app_size": {
+                    "type": "string"
+                },
+                "customer_app_type": {
+                    "type": "string"
                 },
                 "customer_city": {
-                    "$ref": "#/definitions/sql.NullString"
+                    "type": "string"
                 },
                 "customer_country": {
-                    "$ref": "#/definitions/sql.NullString"
+                    "type": "string"
                 },
                 "customer_id": {
                     "type": "string"
                 },
                 "customer_name": {
-                    "$ref": "#/definitions/sql.NullString"
+                    "type": "string"
+                },
+                "customer_primary_email": {
+                    "type": "string"
+                },
+                "customer_primary_phone": {
+                    "type": "string"
+                },
+                "customer_reference": {
+                    "type": "string"
+                },
+                "customer_secondary_email": {
+                    "type": "string"
+                },
+                "customer_secondary_phone": {
+                    "type": "string"
                 },
                 "customer_state": {
-                    "$ref": "#/definitions/sql.NullString"
+                    "type": "string"
                 },
                 "customer_status": {
-                    "$ref": "#/definitions/sql.NullString"
+                    "type": "string"
                 },
                 "customer_total_value": {
-                    "$ref": "#/definitions/sql.NullInt64"
+                    "type": "integer"
+                },
+                "customer_uuid": {
+                    "type": "string"
                 },
                 "tenant_id": {
                     "type": "string"
@@ -98,13 +232,37 @@ const docTemplate = `{
                 "customer_address": {
                     "type": "string"
                 },
+                "customer_app_size": {
+                    "type": "string"
+                },
+                "customer_app_type": {
+                    "type": "string"
+                },
                 "customer_city": {
                     "type": "string"
                 },
                 "customer_country": {
                     "type": "string"
                 },
+                "customer_id": {
+                    "type": "string"
+                },
                 "customer_name": {
+                    "type": "string"
+                },
+                "customer_primary_email": {
+                    "type": "string"
+                },
+                "customer_primary_phone": {
+                    "type": "string"
+                },
+                "customer_reference": {
+                    "type": "string"
+                },
+                "customer_secondary_email": {
+                    "type": "string"
+                },
+                "customer_secondary_phone": {
                     "type": "string"
                 },
                 "customer_state": {
@@ -115,30 +273,6 @@ const docTemplate = `{
                 },
                 "customer_total_value": {
                     "type": "integer"
-                }
-            }
-        },
-        "sql.NullInt64": {
-            "type": "object",
-            "properties": {
-                "int64": {
-                    "type": "integer"
-                },
-                "valid": {
-                    "description": "Valid is true if Int64 is not NULL",
-                    "type": "boolean"
-                }
-            }
-        },
-        "sql.NullString": {
-            "type": "object",
-            "properties": {
-                "string": {
-                    "type": "string"
-                },
-                "valid": {
-                    "description": "Valid is true if String is not NULL",
-                    "type": "boolean"
                 }
             }
         }
@@ -159,7 +293,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "",
 	Schemes:          []string{"http", "https"},
 	Title:            "SalesService APIs",
-	Description:      "Testing Swagger APIs.",
+	Description:      "Sales Service APIs.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

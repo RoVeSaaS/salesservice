@@ -27,20 +27,8 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.createCustomerStmt, err = db.PrepareContext(ctx, createCustomer); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateCustomer: %w", err)
 	}
-	if q.createCustomerContatStmt, err = db.PrepareContext(ctx, createCustomerContat); err != nil {
-		return nil, fmt.Errorf("error preparing query CreateCustomerContat: %w", err)
-	}
-	if q.createCustomerDetailsStmt, err = db.PrepareContext(ctx, createCustomerDetails); err != nil {
-		return nil, fmt.Errorf("error preparing query CreateCustomerDetails: %w", err)
-	}
 	if q.deleteCustomerByIDStmt, err = db.PrepareContext(ctx, deleteCustomerByID); err != nil {
 		return nil, fmt.Errorf("error preparing query DeleteCustomerByID: %w", err)
-	}
-	if q.deleteCustomerContactByIDStmt, err = db.PrepareContext(ctx, deleteCustomerContactByID); err != nil {
-		return nil, fmt.Errorf("error preparing query DeleteCustomerContactByID: %w", err)
-	}
-	if q.deleteCustomerDetailsByIDStmt, err = db.PrepareContext(ctx, deleteCustomerDetailsByID); err != nil {
-		return nil, fmt.Errorf("error preparing query DeleteCustomerDetailsByID: %w", err)
 	}
 	if q.listCustomerByIDStmt, err = db.PrepareContext(ctx, listCustomerByID); err != nil {
 		return nil, fmt.Errorf("error preparing query ListCustomerByID: %w", err)
@@ -58,29 +46,9 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing createCustomerStmt: %w", cerr)
 		}
 	}
-	if q.createCustomerContatStmt != nil {
-		if cerr := q.createCustomerContatStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing createCustomerContatStmt: %w", cerr)
-		}
-	}
-	if q.createCustomerDetailsStmt != nil {
-		if cerr := q.createCustomerDetailsStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing createCustomerDetailsStmt: %w", cerr)
-		}
-	}
 	if q.deleteCustomerByIDStmt != nil {
 		if cerr := q.deleteCustomerByIDStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing deleteCustomerByIDStmt: %w", cerr)
-		}
-	}
-	if q.deleteCustomerContactByIDStmt != nil {
-		if cerr := q.deleteCustomerContactByIDStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing deleteCustomerContactByIDStmt: %w", cerr)
-		}
-	}
-	if q.deleteCustomerDetailsByIDStmt != nil {
-		if cerr := q.deleteCustomerDetailsByIDStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing deleteCustomerDetailsByIDStmt: %w", cerr)
 		}
 	}
 	if q.listCustomerByIDStmt != nil {
@@ -130,29 +98,21 @@ func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, ar
 }
 
 type Queries struct {
-	db                            DBTX
-	tx                            *sql.Tx
-	createCustomerStmt            *sql.Stmt
-	createCustomerContatStmt      *sql.Stmt
-	createCustomerDetailsStmt     *sql.Stmt
-	deleteCustomerByIDStmt        *sql.Stmt
-	deleteCustomerContactByIDStmt *sql.Stmt
-	deleteCustomerDetailsByIDStmt *sql.Stmt
-	listCustomerByIDStmt          *sql.Stmt
-	listCustomersStmt             *sql.Stmt
+	db                     DBTX
+	tx                     *sql.Tx
+	createCustomerStmt     *sql.Stmt
+	deleteCustomerByIDStmt *sql.Stmt
+	listCustomerByIDStmt   *sql.Stmt
+	listCustomersStmt      *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	return &Queries{
-		db:                            tx,
-		tx:                            tx,
-		createCustomerStmt:            q.createCustomerStmt,
-		createCustomerContatStmt:      q.createCustomerContatStmt,
-		createCustomerDetailsStmt:     q.createCustomerDetailsStmt,
-		deleteCustomerByIDStmt:        q.deleteCustomerByIDStmt,
-		deleteCustomerContactByIDStmt: q.deleteCustomerContactByIDStmt,
-		deleteCustomerDetailsByIDStmt: q.deleteCustomerDetailsByIDStmt,
-		listCustomerByIDStmt:          q.listCustomerByIDStmt,
-		listCustomersStmt:             q.listCustomersStmt,
+		db:                     tx,
+		tx:                     tx,
+		createCustomerStmt:     q.createCustomerStmt,
+		deleteCustomerByIDStmt: q.deleteCustomerByIDStmt,
+		listCustomerByIDStmt:   q.listCustomerByIDStmt,
+		listCustomersStmt:      q.listCustomersStmt,
 	}
 }

@@ -12,69 +12,61 @@ import (
 )
 
 type Customer struct {
-	CustomerID         uuid.UUID      `json:"customer_id"`
-	TenantID           string         `json:"tenant_id"`
-	CustomerName       sql.NullString `json:"customer_name"`
-	CustomerAddress    sql.NullString `json:"customer_address"`
-	CustomerCity       sql.NullString `json:"customer_city"`
-	CustomerState      sql.NullString `json:"customer_state"`
-	CustomerCountry    sql.NullString `json:"customer_country"`
-	CustomerTotalValue sql.NullInt64  `json:"customer_total_value"`
-	CustomerStatus     sql.NullString `json:"customer_status"`
-}
-
-type CustomerContact struct {
-	CustomerID           uuid.NullUUID  `json:"customer_id"`
-	TenantID             string         `json:"tenant_id"`
-	CustomerEmail1       sql.NullString `json:"customer_email_1"`
-	CustomerPhoneNumber1 sql.NullString `json:"customer_phone_number_1"`
-	CustomerEmail2       sql.NullString `json:"customer_email_2"`
-	CustomerPhoneNumber2 sql.NullString `json:"customer_phone_number_2"`
-}
-
-type CustomerDetail struct {
-	CustomerID        uuid.NullUUID  `json:"customer_id"`
-	TenantID          string         `json:"tenant_id"`
-	CustomerAppType   sql.NullString `json:"customer_app_type"`
-	CustomerReference sql.NullString `json:"customer_reference"`
-	CustomerAppSize   sql.NullString `json:"customer_app_size"`
+	CustomerUuid           uuid.UUID `json:"customer_uuid"`
+	TenantID               string    `json:"tenant_id"`
+	CustomerID             string    `json:"customer_id"`
+	CustomerName           string    `json:"customer_name"`
+	CustomerAddress        string    `json:"customer_address"`
+	CustomerCity           string    `json:"customer_city"`
+	CustomerState          string    `json:"customer_state"`
+	CustomerCountry        string    `json:"customer_country"`
+	CustomerTotalValue     int64     `json:"customer_total_value"`
+	CustomerStatus         string    `json:"customer_status"`
+	CustomerAppType        string    `json:"customer_app_type"`
+	CustomerReference      string    `json:"customer_reference"`
+	CustomerAppSize        string    `json:"customer_app_size"`
+	CustomerPrimaryEmail   string    `json:"customer_primary_email"`
+	CustomerPrimaryPhone   string    `json:"customer_primary_phone"`
+	CustomerSecondaryEmail string    `json:"customer_secondary_email"`
+	CustomerSecondaryPhone string    `json:"customer_secondary_phone"`
 }
 
 type CustomerTranscation struct {
-	TransactionID    uuid.UUID      `json:"transaction_id"`
-	InvoiceID        sql.NullString `json:"invoice_id"`
-	CustomerID       uuid.NullUUID  `json:"customer_id"`
-	TenantID         string         `json:"tenant_id"`
-	Amount           sql.NullInt64  `json:"amount"`
-	CreatedAt        time.Time      `json:"created_at"`
-	UpdatedAt        time.Time      `json:"updated_at"`
-	TranscationDebit sql.NullBool   `json:"transcation_debit"`
+	TransactionID    uuid.UUID     `json:"transaction_id"`
+	InvoiceID        string        `json:"invoice_id"`
+	CustomerUuid     uuid.NullUUID `json:"customer_uuid"`
+	TenantID         string        `json:"tenant_id"`
+	Amount           sql.NullInt64 `json:"amount"`
+	CreatedAt        time.Time     `json:"created_at"`
+	UpdatedAt        time.Time     `json:"updated_at"`
+	TranscationDebit sql.NullBool  `json:"transcation_debit"`
 }
 
 type InternalTranscation struct {
-	TransactionID    uuid.UUID      `json:"transaction_id"`
-	InvoiceID        sql.NullString `json:"invoice_id"`
-	UserName         sql.NullString `json:"user_name"`
-	TenantID         string         `json:"tenant_id"`
-	Amount           sql.NullInt64  `json:"amount"`
-	CreatedAt        time.Time      `json:"created_at"`
-	UpdatedAt        time.Time      `json:"updated_at"`
-	TranscationDebit sql.NullBool   `json:"transcation_debit"`
+	TransactionID    uuid.UUID     `json:"transaction_id"`
+	InvoiceID        string        `json:"invoice_id"`
+	UserName         string        `json:"user_name"`
+	TenantID         string        `json:"tenant_id"`
+	Amount           sql.NullInt64 `json:"amount"`
+	CreatedAt        time.Time     `json:"created_at"`
+	UpdatedAt        time.Time     `json:"updated_at"`
+	TranscationDebit sql.NullBool  `json:"transcation_debit"`
 }
 
 type Quotation struct {
-	QuotationID    uuid.UUID      `json:"quotation_id"`
-	CustomerID     uuid.NullUUID  `json:"customer_id"`
-	TenantID       string         `json:"tenant_id"`
-	QuotationValue sql.NullInt64  `json:"quotation_value"`
-	QuatationType  sql.NullString `json:"quatation_type"`
-	CreatedAt      time.Time      `json:"created_at"`
-	UpdatedAt      time.Time      `json:"updated_at"`
-	Converted      sql.NullBool   `json:"converted"`
+	QuotationUuid  uuid.UUID     `json:"quotation_uuid"`
+	CustomerUuid   uuid.NullUUID `json:"customer_uuid"`
+	QuotationID    string        `json:"quotation_id"`
+	TenantID       string        `json:"tenant_id"`
+	QuotationValue sql.NullInt64 `json:"quotation_value"`
+	QuatationType  string        `json:"quatation_type"`
+	CreatedAt      time.Time     `json:"created_at"`
+	UpdatedAt      time.Time     `json:"updated_at"`
+	Converted      sql.NullBool  `json:"converted"`
 }
 
 type ServiceDetail struct {
-	CustomerID      uuid.NullUUID `json:"customer_id"`
+	CustomerUuid    uuid.NullUUID `json:"customer_uuid"`
 	UnderWarranty   sql.NullBool  `json:"under_warranty"`
 	NextServiceDate sql.NullTime  `json:"next_service_date"`
 	ServiceAmount   sql.NullInt64 `json:"service_amount"`
@@ -82,25 +74,26 @@ type ServiceDetail struct {
 }
 
 type Vendor struct {
-	VendorID          uuid.UUID      `json:"vendor_id"`
-	VendorName        sql.NullString `json:"vendor_name"`
-	VendorAddress     sql.NullString `json:"vendor_address"`
-	VendorCity        sql.NullString `json:"vendor_city"`
-	VendorState       sql.NullString `json:"vendor_state"`
-	VendorCountry     sql.NullString `json:"vendor_country"`
-	VendorEmail       sql.NullString `json:"vendor_email"`
-	VendorPhoneNumber sql.NullString `json:"vendor_phone_number"`
-	TenantID          string         `json:"tenant_id"`
+	VendorUuid        uuid.UUID `json:"vendor_uuid"`
+	VendorName        string    `json:"vendor_name"`
+	VendorID          string    `json:"vendor_id"`
+	VendorAddress     string    `json:"vendor_address"`
+	VendorCity        string    `json:"vendor_city"`
+	VendorState       string    `json:"vendor_state"`
+	VendorCountry     string    `json:"vendor_country"`
+	VendorEmail       string    `json:"vendor_email"`
+	VendorPhoneNumber string    `json:"vendor_phone_number"`
+	TenantID          string    `json:"tenant_id"`
 }
 
 type VendorTranscation struct {
-	TransactionID    uuid.UUID      `json:"transaction_id"`
-	InvoiceID        sql.NullString `json:"invoice_id"`
-	VendorID         uuid.NullUUID  `json:"vendor_id"`
-	TenantID         string         `json:"tenant_id"`
-	Amount           sql.NullInt64  `json:"amount"`
-	CreatedAt        time.Time      `json:"created_at"`
-	UpdatedAt        time.Time      `json:"updated_at"`
-	TransactionType  sql.NullString `json:"transaction_type"`
-	TranscationDebit sql.NullBool   `json:"transcation_debit"`
+	TransactionID    uuid.UUID     `json:"transaction_id"`
+	InvoiceID        string        `json:"invoice_id"`
+	VendorUuid       uuid.NullUUID `json:"vendor_uuid"`
+	TenantID         string        `json:"tenant_id"`
+	Amount           sql.NullInt64 `json:"amount"`
+	CreatedAt        time.Time     `json:"created_at"`
+	UpdatedAt        time.Time     `json:"updated_at"`
+	TransactionType  string        `json:"transaction_type"`
+	TranscationDebit sql.NullBool  `json:"transcation_debit"`
 }

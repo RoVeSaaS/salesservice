@@ -16,3 +16,10 @@ sql:
         emit_interface: false
         emit_exact_table_names: false
         emit_empty_slices: true
+        overrides:
+        - db_type: pg_catalog.varchar
+          go_type: string
+          nullable: true
+        - db_type: "text"
+          go_type: "string"
+          nullable: true
